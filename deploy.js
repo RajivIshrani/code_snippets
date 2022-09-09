@@ -1,29 +1,31 @@
-const ethers = require("ethers");
-const fs = require("fs-extra");
-// const fs = require("fs");
+// Import
+const { ethers, run, network } = require("hardhat")
 
+// aync main
 async function main() {
-  const provider = new ethers.providers.JsonRpcProvider(/* "rpc url" */);
-  const wallet = new ethers.Wallet(/* "private key" */,
-  provider
-  );
-  const abi = fs.readFileSync(/* "abi file path" */,"utf8");
-  const binary = fs.readFileSync(/* "binary file path" */,
-  "utf8");
-  const contractFactory = new ethers.ContractFactory(abi, binary, wallet);
-  console.log("Deploying, please wait...");
-  const contract = await contractFactory.deploy(); //STOP here! Wait for contract to deploy...
-  console.log(contract);
-  const transactionReceipt = await contract.deployTransaction.wait(1);
-  console.log("Here is the deployment transaction (transaction response): ");
-  consol.log(contract.deployTransaction);
-  console.log("Here is the transaction receipt: ");
-  console.log(transactionReceipt);
+    console.log(network.config)
 }
 
+async function verify(contractAddress, args) {
+    console.log("verifying contract...")
+    try {
+        await run("verify:verify", {
+            address: contractAddress,
+            constructorArguments: args,
+        })
+    } catch (e) {
+        if (e.message.toLowerCase().includes("already verified")) {
+            console.log("Already Verified!")
+        } else {
+            console.log(e)
+        }
+    }
+}
+
+//main
 main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error)
+        process.exit(1)
+    })
